@@ -1,0 +1,56 @@
+<!doctype html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#101010">
+  <meta name="description" content="Watch jersey videos, discover designs and order from IT WORLD JERSEY.">
+  <title>Videos | IT WORLD JERSEY</title>
+  <link rel="stylesheet" href="./styles.css">
+</head>
+<body>
+  <header class="topbar">
+    <a class="brand" href="https://itworldjersey.store" aria-label="IT WORLD JERSEY home"><span class="brand-mark">IT</span><span>WORLD <b>JERSEY</b></span></a>
+    <nav class="topnav" aria-label="Main navigation">
+      <a class="active" href="#videos">Videos <span>🎬</span></a>
+      <a href="https://live.itworldjersey.store">Live <span class="live-dot">●</span></a>
+      <a href="#" id="social-link">Social <span>🪩</span></a>
+    </nav>
+  </header>
+
+  <main id="videos" class="feed" aria-label="Video feed">
+    <article class="video-card" data-video-id="sample-1">
+      <video class="video-player" playsinline loop muted preload="metadata" poster="https://images.unsplash.com/photo-1574629810360-7ef౼?auto=format&fit=crop&w=900&q=80"></video>
+      <div class="video-fallback" aria-hidden="true"><div class="jersey-art">ITW<span>JERSEY</span></div><p>YOUR NEXT MATCH-DAY LOOK</p></div>
+      <div class="video-shade"></div>
+      <div class="video-copy">
+        <span class="eyebrow">IT WORLD JERSEY · FEATURED</span>
+        <h1>Find your next jersey.</h1>
+        <p>Discover designs. Wear your passion.</p>
+        <a class="order-cta" href="https://wa.me/?text=Hi%20IT%20WORLD%20JERSEY%2C%20I%27d%20like%20to%20order%20a%20jersey.">Order via WhatsApp <span>↗</span></a>
+      </div>
+      <aside class="action-rail" aria-label="Video actions">
+        <button class="action like-action" aria-label="Like video"><span class="action-icon">♥</span><small class="like-count">Like</small></button>
+        <button class="action comments-action" aria-label="Comments"><span class="action-icon">▤</span><small>Comments</small></button>
+        <a class="action" aria-label="Order via WhatsApp" href="https://wa.me/?text=Hi%20IT%20WORLD%20JERSEY%2C%20I%27d%20like%20to%20order%20a%20jersey."><span class="action-icon">🛒</span><small>Order</small></a>
+        <button class="action share-action" aria-label="Share video"><span class="action-icon">↗</span><small>Share</small></button>
+        <button class="action more-action" aria-label="More options"><span class="action-icon">•••</span><small>More</small></button>
+        <div class="more-menu" hidden>
+          <button data-action="download">⏬ Download</button>
+          <button data-action="copy">🔗 Copy link</button>
+          <button data-action="report">🚩 Report</button>
+        </div>
+      </aside>
+    </article>
+  </main>
+
+  <nav class="bottomnav" aria-label="Account navigation">
+    <a href="https://itworldjersey.store"><span>⌂</span>Home</a>
+    <a href="https://itworldjersey.store/shop"><span>▦</span>Shop</a>
+    <a href="https://messenger.profile.itworldjersey.store"><span>✉</span>Inbox</a>
+    <a href="https://profile.itworldjersey.store"><span>◉</span>Profile</a>
+  </nav>
+  <div id="toast" class="toast" role="status" aria-live="polite"></div>
+  <script src="./app.js"></script>
+</body>
+</html>
