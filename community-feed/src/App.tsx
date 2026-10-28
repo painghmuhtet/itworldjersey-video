@@ -92,14 +92,21 @@ export default function App() {
         window.prompt('Copy this video link:', shareUrl);
       }
     } else if (action === 'Download') {
-      const link = document.createElement('a');
-      link.href = clip.src;
-      link.download = `it-world-community-${clip.id}.mp4`;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      document.body.appendChild(link);
-      link.click();
-      link.remove();
+      try {
+        const response = await fetch(clip.src, { mode: 'cors' });
+        if (!response.ok) throw new Error('Video download failed');
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = `it-world-community-${clip.id}.mp4`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(objectUrl);
+      } catch {
+        window.open(clip.src, '_blank', 'noopener,noreferrer');
+      }
     } else if (action === 'Report') {
       const subject = encodeURIComponent(`IT WORLD COMMUNITY video report: ${clip.title}`);
       const body = encodeURIComponent(`Please review this video.\nTitle: ${clip.title}\nVideo ID: ${clip.id}\nLink: ${shareUrl}`);
@@ -107,6 +114,16 @@ export default function App() {
     }
     setMoreOpen(false);
   };
+  useEffect(() => {
+    const requestedVideo = new URLSearchParams(window.location.search).get('video');
+    if (!requestedVideo) return;
+    const index = clips.findIndex(clip => clip.id === requestedVideo);
+    if (index < 0) return;
+    setActiveVideoIndex(index);
+    window.setTimeout(() => {
+      document.getElementById(requestedVideo)?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }, 0);
+  }, []);
   useEffect(() => {
     const videos = videoRefs.current.filter(Boolean);
     if (!('IntersectionObserver' in window)) {
@@ -253,7 +270,7 @@ export default function App() {
             <span className="text-white/70">↑ Next · ↓ Previous</span>
           </div>
           {clips.map((clip, index) => (
-            <article key={clip.id} className="relative h-[calc(100dvh-12.5rem)] min-h-[430px] max-h-[760px] snap-start snap-always overflow-hidden bg-[#08090c] text-white">
+            <article id={clip.id} key={clip.id} className="relative h-[calc(100dvh-12.5rem)] min-h-[430px] max-h-[760px] snap-start snap-always overflow-hidden bg-[#08090c] text-white">
               <video ref={(el) => { if (el) videoRefs.current[index] = el; }} data-primary={clip.src} data-fallbacks={JSON.stringify(clip.fallbacks)} data-fallback-index="0" data-loaded={index === 0 ? "true" : undefined} src={index === 0 ? clip.src : undefined} className="absolute inset-0 h-full w-full object-contain" controls={false} playsInline loop muted preload={index === 0 ? "auto" : "none"} onLoadStart={() => setVideoStatus(previous => ({ ...previous, [clip.id]: "loading" }))} onLoadedData={() => setVideoStatus(previous => ({ ...previous, [clip.id]: "ready" }))} onCanPlay={() => setVideoStatus(previous => ({ ...previous, [clip.id]: "ready" }))} onError={(e) => { const video = e.currentTarget; const candidates = JSON.parse(video.dataset.fallbacks || "[]") as string[]; const next = Number(video.dataset.fallbackIndex || 0); if (next < candidates.length) { video.dataset.fallbackIndex = String(next + 1); video.src = candidates[next]; video.dataset.loaded = "true"; video.load(); } else { setVideoStatus(previous => ({ ...previous, [clip.id]: "error" })); } }} />
               {videoStatus[clip.id] !== "ready" && <div className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center bg-black/25 px-8 text-center"><span className="rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-xs font-semibold text-white/85">{videoStatus[clip.id] === "error" ? "Video unavailable. Swipe to the next clip." : "Loading video…"}</span></div>}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/80" />
