@@ -79,6 +79,32 @@ export default function App() {
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) alert('Share this link: ' + shareUrl);
     }
+  };  const handleMoreAction = async (action: string, clip: Clip) => {
+    const shareUrl = `${window.location.origin}/?video=${encodeURIComponent(clip.id)}`;
+    if (action === 'Share') {
+      await shareClip(clip);
+    } else if (action === 'Copy link') {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Video link copied.');
+      } catch {
+        window.prompt('Copy this video link:', shareUrl);
+      }
+    } else if (action === 'Download') {
+      const link = document.createElement('a');
+      link.href = clip.src;
+      link.download = `it-world-community-${clip.id}.mp4`;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      document.body.appendChild(link);
+      link.click();
+      link.remove();
+    } else if (action === 'Report') {
+      const subject = encodeURIComponent(`IT WORLD COMMUNITY video report: ${clip.title}`);
+      const body = encodeURIComponent(`Please review this video.\nTitle: ${clip.title}\nVideo ID: ${clip.id}\nLink: ${shareUrl}`);
+      window.location.href = `mailto:inquiry@itworldjersey.store?subject=${subject}&body=${body}`;
+    }
+    setMoreOpen(false);
   };
   useEffect(() => {
     const videos = videoRefs.current.filter(Boolean);
@@ -209,9 +235,9 @@ export default function App() {
             <div className="absolute bottom-5 right-3 z-10 flex flex-col items-center gap-5 text-white">
               <button className="flex flex-col items-center gap-1" aria-label="Like video" onClick={() => alert('Likes will be saved after sign-in and backend setup.')}><Heart size={30} fill="white" /><span className="text-[11px]">Like</span></button>
               <button className="flex flex-col items-center gap-1" aria-label="Comments" onClick={() => alert('Comments will be connected to the chat service.')}><MessageCircle size={28} fill="white" stroke="#111318" /><span className="text-[11px]">Comments</span></button>
-              <a className="flex flex-col items-center gap-1 text-white no-underline" href="https://wa.me/" aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
+              <a className="flex flex-col items-center gap-1 text-white no-underline" href="https://wa.me/601126238907?text=Hi%20IT%20WORLD%20JERSEY%2C%20I%27d%20like%20to%20ask%20about%20this%20jersey." aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
               <button className="flex flex-col items-center gap-1" aria-label="More video actions" onClick={() => setMoreOpen(!moreOpen)}><span className="grid h-8 w-8 place-items-center rounded-full bg-black/40 text-2xl">•••</span><span className="text-[11px]">More</span></button>
-              {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>{if(item==='Copy link'&&navigator.clipboard) navigator.clipboard.writeText(window.location.href); else alert(item+' will be enabled with the video backend.');setMoreOpen(false)}}>{item}</button>)}</div>}
+              {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>void handleMoreAction(item, clips[activeVideoIndex] || clips[0])}>{item}</button>)}</div>}
             </div>
             <div className="absolute bottom-5 left-4 right-16 z-10 text-white">
               <p className="font-extrabold">@itworldcommunity</p>
@@ -240,9 +266,9 @@ export default function App() {
                 <button className="flex flex-col items-center gap-1" aria-label="Like video" aria-pressed={likedVideos.has(clip.id)} onClick={() => toggleLike(clip.id)}><Heart size={29} fill={likedVideos.has(clip.id) ? '#ff5555' : 'white'} stroke={likedVideos.has(clip.id) ? '#ff5555' : 'white'} /><span className="text-[10px]">{likedVideos.has(clip.id) ? 'Liked' : 'Like'} · {likedVideos.has(clip.id) ? 1 : 0}</span></button>
                 <button className="flex flex-col items-center gap-1" aria-label="Comments" onClick={() => { setCommentsFor(clip.id); setCommentDraft(''); }}><MessageCircle size={27} fill="white" stroke="#111318" /><span className="text-[10px]">Comments · {(localComments[clip.id] || []).length}</span></button>
                 <button className="flex flex-col items-center gap-1" aria-label="Share video" onClick={() => void shareClip(clip)}><Share2 size={25} /><span className="text-[10px]">Share</span></button>
-                <a className="flex flex-col items-center gap-1 text-white no-underline" href="https://wa.me/" aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
+                <a className="flex flex-col items-center gap-1 text-white no-underline" href="https://wa.me/601126238907?text=Hi%20IT%20WORLD%20JERSEY%2C%20I%27d%20like%20to%20ask%20about%20this%20jersey." aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
                 <button className="flex flex-col items-center gap-1" aria-label="More video actions" onClick={() => setMoreOpen(!moreOpen)}><span className="grid h-8 w-8 place-items-center rounded-full bg-black/40 text-2xl">•••</span><span className="text-[10px]">More</span></button>
-                {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>{if(item==='Copy link'&&navigator.clipboard) navigator.clipboard.writeText(window.location.href); else alert(item+' will be enabled with the video backend.');setMoreOpen(false)}}>{item}</button>)}</div>}
+                {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>void handleMoreAction(item, clip)}>{item}</button>)}</div>}
               </div>
               {commentsFor === clip.id && <div className="absolute inset-x-3 bottom-20 z-30 rounded-2xl border border-white/15 bg-[#111319]/95 p-3 shadow-2xl backdrop-blur-xl" role="dialog" aria-label="Video comments"><div className="mb-3 flex items-center justify-between"><span className="font-extrabold">Comments · {(localComments[clip.id] || []).length}</span><button aria-label="Close comments" onClick={() => setCommentsFor(null)} className="rounded-lg p-1 text-white/70"><X size={18}/></button></div><div className="max-h-32 space-y-2 overflow-y-auto text-sm">{(localComments[clip.id] || []).length === 0 ? <p className="text-white/50">Be the first to comment.</p> : (localComments[clip.id] || []).map((comment, commentIndex) => <p key={commentIndex} className="rounded-lg bg-white/[.06] px-3 py-2">{comment}</p>)}</div><form className="mt-3 flex gap-2" onSubmit={e => { e.preventDefault(); const value = commentDraft.trim(); if (!value) return; setLocalComments(previous => ({ ...previous, [clip.id]: [...(previous[clip.id] || []), value] })); setCommentDraft(''); }}><input value={commentDraft} onChange={e => setCommentDraft(e.target.value)} placeholder="Write a comment…" className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none"/><button type="submit" className="rounded-xl bg-[#f04444] px-3 py-2 text-sm font-bold">Post</button></form><p className="mt-2 text-[10px] text-white/40">Preview only — comments are stored on this device/session.</p></div>}
               <div className="absolute bottom-5 left-4 right-16 z-10 text-white">
