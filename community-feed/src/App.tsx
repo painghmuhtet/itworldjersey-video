@@ -60,6 +60,7 @@ export default function App() {
   const [menuOpen, setMenuOpen] = useState(false);
   const [moreOpen, setMoreOpen] = useState(false);
   const [activeVideoIndex, setActiveVideoIndex] = useState(0);
+  const [videoStatus, setVideoStatus] = useState<Record<string, 'loading' | 'ready' | 'error'>>({});
   const [likedVideos, setLikedVideos] = useState<Set<string>>(() => new Set());
   const [commentsFor, setCommentsFor] = useState<string | null>(null);
   const [commentDraft, setCommentDraft] = useState('');
@@ -79,7 +80,50 @@ export default function App() {
     } catch (error) {
       if (!(error instanceof DOMException && error.name === 'AbortError')) alert('Share this link: ' + shareUrl);
     }
+  };  const handleMoreAction = async (action: string, clip: Clip) => {
+    const shareUrl = `${window.location.origin}/?video=${encodeURIComponent(clip.id)}`;
+    if (action === 'Share') {
+      await shareClip(clip);
+    } else if (action === 'Copy link') {
+      try {
+        await navigator.clipboard.writeText(shareUrl);
+        alert('Video link copied.');
+      } catch {
+        window.prompt('Copy this video link:', shareUrl);
+      }
+    } else if (action === 'Download') {
+      try {
+        const response = await fetch(clip.src, { mode: 'cors' });
+        if (!response.ok) throw new Error('Video download failed');
+        const blob = await response.blob();
+        const objectUrl = URL.createObjectURL(blob);
+        const link = document.createElement('a');
+        link.href = objectUrl;
+        link.download = `it-world-community-${clip.id}.mp4`;
+        document.body.appendChild(link);
+        link.click();
+        link.remove();
+        URL.revokeObjectURL(objectUrl);
+      } catch {
+        window.open(clip.src, '_blank', 'noopener,noreferrer');
+      }
+    } else if (action === 'Report') {
+      const subject = encodeURIComponent(`IT WORLD COMMUNITY video report: ${clip.title}`);
+      const body = encodeURIComponent(`Please review this video.\nTitle: ${clip.title}\nVideo ID: ${clip.id}\nLink: ${shareUrl}`);
+      window.location.href = `mailto:inquiry@itworldjersey.store?subject=${subject}&body=${body}`;
+    }
+    setMoreOpen(false);
   };
+  useEffect(() => {
+    const requestedVideo = new URLSearchParams(window.location.search).get('video');
+    if (!requestedVideo) return;
+    const index = clips.findIndex(clip => clip.id === requestedVideo);
+    if (index < 0) return;
+    setActiveVideoIndex(index);
+    window.setTimeout(() => {
+      document.getElementById(requestedVideo)?.scrollIntoView({ behavior: 'auto', block: 'start' });
+    }, 0);
+  }, []);
   useEffect(() => {
     const videos = videoRefs.current.filter(Boolean);
     if (!('IntersectionObserver' in window)) {
@@ -209,9 +253,9 @@ export default function App() {
             <div className="absolute bottom-5 right-3 z-10 flex flex-col items-center gap-5 text-white">
               <button className="flex flex-col items-center gap-1" aria-label="Like video" onClick={() => alert('Likes will be saved after sign-in and backend setup.')}><Heart size={30} fill="white" /><span className="text-[11px]">Like</span></button>
               <button className="flex flex-col items-center gap-1" aria-label="Comments" onClick={() => alert('Comments will be connected to the chat service.')}><MessageCircle size={28} fill="white" stroke="#111318" /><span className="text-[11px]">Comments</span></button>
-              <a className="flex flex-col items-center gap-1 text-white no-underline" href="https://wa.me/" aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
+              <a className="flex flex-col items-center gap-1 text-white no-underline" href={`https://wa.me/601126238907?text=${encodeURIComponent(`Hi IT WORLD JERSEY! I would like to ask about: ${clips[activeVideoIndex]?.title || clips[0].title}. Video source: ${clips[activeVideoIndex]?.src || clips[0].src}. Watch page: ${window.location.origin}/?video=${encodeURIComponent((clips[activeVideoIndex] || clips[0]).id)}. Please share price and availability.`)}`} aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
               <button className="flex flex-col items-center gap-1" aria-label="More video actions" onClick={() => setMoreOpen(!moreOpen)}><span className="grid h-8 w-8 place-items-center rounded-full bg-black/40 text-2xl">•••</span><span className="text-[11px]">More</span></button>
-              {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>{if(item==='Copy link'&&navigator.clipboard) navigator.clipboard.writeText(window.location.href); else alert(item+' will be enabled with the video backend.');setMoreOpen(false)}}>{item}</button>)}</div>}
+              {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>void handleMoreAction(item, clips[activeVideoIndex] || clips[0])}>{item}</button>)}</div>}
             </div>
             <div className="absolute bottom-5 left-4 right-16 z-10 text-white">
               <p className="font-extrabold">@itworldcommunity</p>
@@ -226,8 +270,9 @@ export default function App() {
             <span className="text-white/70">↑ Next · ↓ Previous</span>
           </div>
           {clips.map((clip, index) => (
-            <article key={clip.id} className="relative h-[calc(100dvh-12.5rem)] min-h-[430px] max-h-[760px] snap-start snap-always overflow-hidden bg-[#08090c] text-white">
-              <video ref={(el) => { if (el) videoRefs.current[index] = el; }} data-primary={clip.src} data-fallbacks={JSON.stringify(clip.fallbacks)} data-fallback-index="0" data-loaded={index === 0 ? "true" : undefined} src={index === 0 ? clip.src : undefined} className="absolute inset-0 h-full w-full object-contain" controls={false} playsInline loop muted preload={index === 0 ? "auto" : "none"} onError={(e) => { const video = e.currentTarget; const candidates = JSON.parse(video.dataset.fallbacks || '[]') as string[]; const next = Number(video.dataset.fallbackIndex || 0); if (next < candidates.length) { video.dataset.fallbackIndex = String(next + 1); video.load(); video.src = candidates[next]; } }} />
+            <article id={clip.id} key={clip.id} className="relative h-[calc(100dvh-12.5rem)] min-h-[430px] max-h-[760px] snap-start snap-always overflow-hidden bg-[#08090c] text-white">
+              <video ref={(el) => { if (el) videoRefs.current[index] = el; }} data-primary={clip.src} data-fallbacks={JSON.stringify(clip.fallbacks)} data-fallback-index="0" data-loaded={index === 0 ? "true" : undefined} src={index === 0 ? clip.src : undefined} className="absolute inset-0 h-full w-full object-contain" controls={false} playsInline loop muted preload={index === 0 ? "auto" : "none"} onLoadStart={() => setVideoStatus(previous => ({ ...previous, [clip.id]: "loading" }))} onLoadedData={() => setVideoStatus(previous => ({ ...previous, [clip.id]: "ready" }))} onCanPlay={() => setVideoStatus(previous => ({ ...previous, [clip.id]: "ready" }))} onError={(e) => { const video = e.currentTarget; const candidates = JSON.parse(video.dataset.fallbacks || "[]") as string[]; const next = Number(video.dataset.fallbackIndex || 0); if (next < candidates.length) { video.dataset.fallbackIndex = String(next + 1); video.src = candidates[next]; video.dataset.loaded = "true"; video.load(); } else { setVideoStatus(previous => ({ ...previous, [clip.id]: "error" })); } }} />
+              {videoStatus[clip.id] !== "ready" && <div className="pointer-events-none absolute inset-0 z-[5] flex items-center justify-center bg-black/25 px-8 text-center"><span className="rounded-xl border border-white/10 bg-black/60 px-4 py-3 text-xs font-semibold text-white/85">{videoStatus[clip.id] === "error" ? "Video unavailable. Swipe to the next clip." : "Loading video…"}</span></div>}
               <div className="pointer-events-none absolute inset-0 bg-gradient-to-b from-black/35 via-transparent to-black/80" />
               <div className="absolute inset-0 opacity-40" style={{backgroundImage:"linear-gradient(180deg,rgba(0,0,0,.28),transparent 30%,transparent 58%,rgba(0,0,0,.86)),repeating-linear-gradient(90deg,transparent 0 13%,rgba(255,255,255,.035) 13.5% 14%,transparent 14.5% 28%)"}} />
               <nav aria-label="Video sections" className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-4 border-b border-white/10 bg-[#08090c]/65 px-2 pb-3 pt-4 text-xs font-bold backdrop-blur-sm">
@@ -240,9 +285,9 @@ export default function App() {
                 <button className="flex flex-col items-center gap-1" aria-label="Like video" aria-pressed={likedVideos.has(clip.id)} onClick={() => toggleLike(clip.id)}><Heart size={29} fill={likedVideos.has(clip.id) ? '#ff5555' : 'white'} stroke={likedVideos.has(clip.id) ? '#ff5555' : 'white'} /><span className="text-[10px]">{likedVideos.has(clip.id) ? 'Liked' : 'Like'} · {likedVideos.has(clip.id) ? 1 : 0}</span></button>
                 <button className="flex flex-col items-center gap-1" aria-label="Comments" onClick={() => { setCommentsFor(clip.id); setCommentDraft(''); }}><MessageCircle size={27} fill="white" stroke="#111318" /><span className="text-[10px]">Comments · {(localComments[clip.id] || []).length}</span></button>
                 <button className="flex flex-col items-center gap-1" aria-label="Share video" onClick={() => void shareClip(clip)}><Share2 size={25} /><span className="text-[10px]">Share</span></button>
-                <a className="flex flex-col items-center gap-1 text-white no-underline" href="https://wa.me/" aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
+                <a className="flex flex-col items-center gap-1 text-white no-underline" href={`https://wa.me/601126238907?text=${encodeURIComponent(`Hi IT WORLD JERSEY! I would like to ask about: ${clips[activeVideoIndex]?.title || clips[0].title}. Video source: ${clips[activeVideoIndex]?.src || clips[0].src}. Watch page: ${window.location.origin}/?video=${encodeURIComponent((clips[activeVideoIndex] || clips[0]).id)}. Please share price and availability.`)}`} aria-label="Order via WhatsApp"><span className="grid h-8 w-8 place-items-center rounded-full bg-green-600"><MessageCircle size={20}/></span><span className="text-[10px] text-center">Order via<br/>WhatsApp</span></a>
                 <button className="flex flex-col items-center gap-1" aria-label="More video actions" onClick={() => setMoreOpen(!moreOpen)}><span className="grid h-8 w-8 place-items-center rounded-full bg-black/40 text-2xl">•••</span><span className="text-[10px]">More</span></button>
-                {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>{if(item==='Copy link'&&navigator.clipboard) navigator.clipboard.writeText(window.location.href); else alert(item+' will be enabled with the video backend.');setMoreOpen(false)}}>{item}</button>)}</div>}
+                {moreOpen && <div className="absolute bottom-0 right-12 flex w-36 flex-col rounded-xl border border-white/15 bg-[#17191f] p-2 text-xs shadow-xl">{['Share','Download','Copy link','Report'].map(item=><button key={item} className="rounded-lg px-3 py-2 text-left hover:bg-white/10" onClick={()=>void handleMoreAction(item, clip)}>{item}</button>)}</div>}
               </div>
               {commentsFor === clip.id && <div className="absolute inset-x-3 bottom-20 z-30 rounded-2xl border border-white/15 bg-[#111319]/95 p-3 shadow-2xl backdrop-blur-xl" role="dialog" aria-label="Video comments"><div className="mb-3 flex items-center justify-between"><span className="font-extrabold">Comments · {(localComments[clip.id] || []).length}</span><button aria-label="Close comments" onClick={() => setCommentsFor(null)} className="rounded-lg p-1 text-white/70"><X size={18}/></button></div><div className="max-h-32 space-y-2 overflow-y-auto text-sm">{(localComments[clip.id] || []).length === 0 ? <p className="text-white/50">Be the first to comment.</p> : (localComments[clip.id] || []).map((comment, commentIndex) => <p key={commentIndex} className="rounded-lg bg-white/[.06] px-3 py-2">{comment}</p>)}</div><form className="mt-3 flex gap-2" onSubmit={e => { e.preventDefault(); const value = commentDraft.trim(); if (!value) return; setLocalComments(previous => ({ ...previous, [clip.id]: [...(previous[clip.id] || []), value] })); setCommentDraft(''); }}><input value={commentDraft} onChange={e => setCommentDraft(e.target.value)} placeholder="Write a comment…" className="min-w-0 flex-1 rounded-xl border border-white/10 bg-black/40 px-3 py-2 text-sm outline-none"/><button type="submit" className="rounded-xl bg-[#f04444] px-3 py-2 text-sm font-bold">Post</button></form><p className="mt-2 text-[10px] text-white/40">Preview only — comments are stored on this device/session.</p></div>}
               <div className="absolute bottom-5 left-4 right-16 z-10 text-white">
