@@ -13,9 +13,10 @@ Mobile-first video feed for **IT WORLD JERSEY**. This repository is a web-first 
 ## Canonical domain plan
 
 - Videos: https://videos.itworldjersey.store
-- Live: https://live.itworldjersey.store
+- Live Sale: https://itworldjersey.store/live/
 - Main store: https://itworldjersey.store
 - Shop: https://itworldjersey.store/shop
+- Custom design: https://itworldjersey.store/custom-design.html
 - Inbox: https://messenger.profile.itworldjersey.store
 - Profile: https://profile.itworldjersey.store
 - Sign in: https://signin.profile.itworldjersey.store
@@ -28,9 +29,9 @@ Mobile-first video feed for **IT WORLD JERSEY**. This repository is a web-first 
 2. Select `main` as the production branch.
 3. This is a static HTML/CSS/JavaScript starter, so no build command is required.
 4. Set the output directory to the repository root if supported. If the Pages setup requires a dedicated output directory, move the static files into `public/` and use `public`.
-5. Add `videos.itworldjersey.store` as a custom domain after the Pages project has deployed.
+5. The existing Pages project uses `videos.itworldjersey.store` as its branded custom domain.
 
-The retired `itworldlive.stream` domain must not be used for new links or configuration. The store domain and its subdomains are canonical. Do not remove legacy DNS records until the canonical site and routes are verified.
+Keep all new links and configuration on the canonical store domain or its verified subdomains. Verify each route before removing any legacy DNS records.
 
 ## API and security notes
 
