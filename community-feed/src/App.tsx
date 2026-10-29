@@ -126,13 +126,29 @@ export default function App() {
   }, []);
   useEffect(() => {
     const videos = videoRefs.current.filter(Boolean);
+    const playVisible = (video: HTMLVideoElement, allowSound: boolean) => {
+      if (!video.isConnected) return;
+      if (!video.dataset.loaded && video.dataset.primary) {
+        video.src = video.dataset.primary;
+        video.dataset.loaded = 'true';
+        video.load();
+      }
+      video.volume = 1;
+      video.muted = !allowSound;
+      void video.play().catch(() => {
+        // Browsers often block audible autoplay without a user gesture.
+        // Fall back to muted autoplay so the feed still starts automatically.
+        video.muted = true;
+        void video.play().catch(() => {});
+      });
+    };
+    const activeVideo = () => {
+      const video = videos[activeVideoIndex] || videos[0];
+      if (video && video.getBoundingClientRect().height > 0) playVisible(video, false);
+    };
     if (!('IntersectionObserver' in window)) {
       const first = videos[0];
-      if (first && first.dataset.primary && !first.dataset.loaded) {
-        first.src = first.dataset.primary;
-        first.dataset.loaded = 'true';
-        first.load();
-      }
+      if (first) playVisible(first, false);
       return;
     }
     const observer = new IntersectionObserver((entries) => {
@@ -144,14 +160,7 @@ export default function App() {
           for (const other of videos) {
             if (other !== current) { other.pause(); other.muted = true; }
           }
-          if (!current.dataset.loaded && current.dataset.primary) {
-            current.src = current.dataset.primary;
-            current.dataset.loaded = 'true';
-            current.load();
-          }
-          current.muted = false;
-          current.volume = 1;
-          void current.play().catch(() => {});
+          playVisible(current, false);
         } else {
           current.pause();
           current.muted = true;
@@ -159,8 +168,23 @@ export default function App() {
       }
     }, { threshold: [0, 0.65, 1] });
     videos.forEach(video => observer.observe(video));
-    return () => observer.disconnect();
-  }, []);
+    const resumeOnReturn = () => {
+      if (document.visibilityState === 'visible') activeVideo();
+    };
+    const enableSoundOnGesture = () => {
+      const video = videos[activeVideoIndex] || videos[0];
+      if (video && video.getBoundingClientRect().height > 0) playVisible(video, true);
+    };
+    document.addEventListener('visibilitychange', resumeOnReturn);
+    window.addEventListener('pageshow', resumeOnReturn);
+    window.addEventListener('pointerdown', enableSoundOnGesture, { passive: true });
+    return () => {
+      observer.disconnect();
+      document.removeEventListener('visibilitychange', resumeOnReturn);
+      window.removeEventListener('pageshow', resumeOnReturn);
+      window.removeEventListener('pointerdown', enableSoundOnGesture);
+    };
+  }, [activeVideoIndex]);
   const filtered = useMemo(
     () =>
       clips.filter(c =>
