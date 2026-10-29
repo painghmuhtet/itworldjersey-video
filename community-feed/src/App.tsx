@@ -512,7 +512,7 @@ export default function App() {
       <nav aria-label="App navigation" className="fixed inset-x-0 bottom-0 z-40 border-t border-white/10 bg-[#08090c]/95 px-2 py-2 backdrop-blur-xl sm:hidden">
         <div className="mx-auto grid max-w-lg grid-cols-5 gap-1 text-center text-[10px] font-bold">
           <a href="https://itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">⌂</span>Home</a>
-          <a href="https://itworldjersey.store/shop" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">▦</span>Shop</a>
+          <a href="https://itworldjersey.store/shop/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">▦</span>Shop</a>
           <a href="https://itworldjersey.store/custom-design.html" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">＋</span>Create</a>
           <a href="https://messenger.profile.itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">✉</span>Inbox</a>
           <a href="https://profile.itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">◉</span>Profile</a>
