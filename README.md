@@ -10,11 +10,11 @@ Mobile-first video feed for **IT WORLD JERSEY**. This repository is a web-first 
 - Brand-owned domain links
 - No API keys or secrets committed to source
 
-## Planned domains
+## Canonical domain plan
 
 - Videos: https://videos.itworldjersey.store
 - Live: https://live.itworldjersey.store
-- Home: https://itworldjersey.store
+- Main store: https://itworldjersey.store
 - Shop: https://itworldjersey.store/shop
 - Inbox: https://messenger.profile.itworldjersey.store
 - Profile: https://profile.itworldjersey.store
@@ -30,7 +30,7 @@ Mobile-first video feed for **IT WORLD JERSEY**. This repository is a web-first 
 4. Set the output directory to the repository root if supported. If the Pages setup requires a dedicated output directory, move the static files into `public/` and use `public`.
 5. Add `videos.itworldjersey.store` as a custom domain after the Pages project has deployed.
 
-No DNS or domain settings have been changed by this repository setup.
+The retired `itworldlive.stream` domain must not be used for new links or configuration. The store domain and its subdomains are canonical. Do not remove legacy DNS records until the canonical site and routes are verified.
 
 ## API and security notes
 
