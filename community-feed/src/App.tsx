@@ -46,7 +46,7 @@ const clips: Clip[] = r2Objects.map((item, index) => ({
   id: `r2-${index + 1}`,
   title: item.title,
   category: item.category,
-  // Use the current jersey-store domain; itworldlive.stream is retired.
+  // Use the branded media subdomain under itworldjersey.store.
   src: `https://media.itworldjersey.store/${item.key.split('/').slice(1).map(part => encodeURIComponent(part)).join('/')}`,
   fallbacks: [
     `https://pub-b0d511ea0d9c42a3bcb6558724681719.r2.dev/${item.key.split('/').map(part => encodeURIComponent(part)).join('/')}`,
