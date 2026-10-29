@@ -2,6 +2,16 @@
 
 Mobile-first video feed for **IT WORLD JERSEY**. This repository is a web-first starter designed for Cloudflare Pages, with a future Cloudflare Worker API.
 
+## Canonical domain plan
+
+- Main store: https://itworldjersey.store/
+- Shop: https://itworldjersey.store/shop/
+- Videos: https://videos.itworldjersey.store/
+- Live Sale: https://itworldjersey.store/live/
+- Product media: https://media.itworldjersey.store/
+
+The retired `itworldlive.stream` domain must not be used for new links or configuration. The store domain and its subdomains are the canonical domain family.
+
 ## Current starter features
 
 - Responsive video-feed interface with top and bottom navigation
@@ -10,27 +20,15 @@ Mobile-first video feed for **IT WORLD JERSEY**. This repository is a web-first 
 - Brand-owned domain links
 - No API keys or secrets committed to source
 
-## Planned domains
-
-- Videos: https://videos.itworldjersey.store
-- Live: https://live.itworldjersey.store
-- Home: https://itworldjersey.store
-- Shop: https://itworldjersey.store/shop
-- Inbox: https://messenger.profile.itworldjersey.store
-- Profile: https://profile.itworldjersey.store
-- Sign in: https://signin.profile.itworldjersey.store
-- Register: https://signup.profile.itworldjersey.store
-- Admin: https://admin.itworldjersey.store
-
 ## Deploy to Cloudflare Pages
 
-1. In Cloudflare, open **Workers & Pages** and create a Pages project connected to this repository.
+1. In Cloudflare, open Workers & Pages and connect this repository.
 2. Select `main` as the production branch.
 3. This is a static HTML/CSS/JavaScript starter, so no build command is required.
-4. Set the output directory to the repository root if supported. If the Pages setup requires a dedicated output directory, move the static files into `public/` and use `public`.
+4. Use the repository root as output directory if supported.
 5. Add `videos.itworldjersey.store` as a custom domain after the Pages project has deployed.
 
-No DNS or domain settings have been changed by this repository setup.
+Do not change DNS or remove legacy domain records until the canonical website and subdomain routes have been verified.
 
 ## API and security notes
 
@@ -38,7 +36,7 @@ The current files are a frontend prototype, not a production social network. Lik
 
 ## Reference and attribution
 
-Reference project: [matheuspelegrino/tiktok-clone](https://github.com/matheuspelegrino/tiktok-clone). Its README states that the project is MIT-licensed. The current HTML/CSS/JavaScript starter is an independent implementation and does not copy its Expo/React Native source files. If source code or assets from the reference project are copied in a future commit, retain the original copyright and license notice and verify the exact upstream LICENSE file first.
+Reference project: [matheuspelegrino/tiktok-clone](https://github.com/matheuspelegrino/tiktok-clone). Its README states that the project is MIT-licensed. If source code or assets from the reference project are copied in a future commit, retain the original copyright and license notice and verify the exact upstream LICENSE file first.
 
 ## License
 
