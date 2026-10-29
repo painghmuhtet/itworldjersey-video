@@ -210,7 +210,7 @@ export default function App() {
           </a>
           <nav aria-label="Primary navigation" className="hidden items-center gap-2 lg:flex">
             <a href="#feed" className="rounded-full bg-[#f04444]/15 px-3 py-2 text-xs font-extrabold text-[#ff7777] no-underline">Videos 🎬</a>
-            <a href="https://itworldjersey.store/" className="rounded-full border border-white/10 px-3 py-2 text-xs font-bold text-white/75 no-underline hover:text-white">Live 🔴</a>
+            <a href="https://itworldjersey.store/live/" className="rounded-full border border-white/10 px-3 py-2 text-xs font-bold text-white/75 no-underline hover:text-white">Live 🔴</a>
             <a href="#social" className="rounded-full border border-white/10 px-3 py-2 text-xs font-bold text-white/75 no-underline hover:text-white">Social 🪩</a>
           </nav>
           <div className="hidden w-full max-w-sm items-center gap-2 rounded-full border border-white/10 bg-white/[.04] px-4 py-2.5 md:flex">
@@ -265,7 +265,7 @@ export default function App() {
             <div className="absolute inset-0 bg-gradient-to-b from-[#4b515a] via-[#252a31] to-[#090a0d]" />
             <div className="absolute inset-0 opacity-50" style={{backgroundImage:"linear-gradient(180deg,rgba(0,0,0,.25),transparent 28%,transparent 65%,rgba(0,0,0,.8)), repeating-linear-gradient(90deg,transparent 0 13%,rgba(255,255,255,.035) 13.5% 14%,transparent 14.5% 28%), linear-gradient(135deg,#4b5059,#252a31 42%,#101217)"}} />
             <nav aria-label="Video sections" className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-5 border-b border-white/10 bg-[#08090c]/70 px-3 pb-3 pt-4 text-sm font-bold backdrop-blur-sm">              <a href="#feed" className="border-b-2 border-[#ff5555] pb-1 text-white no-underline">Videos 🎬</a>
-              <a href="https://itworldjersey.store/" className="text-white/75 no-underline">Live 🔴</a>
+              <a href="https://itworldjersey.store/live/" className="text-white/75 no-underline">Live 🔴</a>
               <a href="#social" className="text-white/75 no-underline">Social 🪩</a>
             </nav>
             <div className="absolute inset-x-0 top-1/2 -translate-y-1/2 text-center">
@@ -300,7 +300,7 @@ export default function App() {
               <div className="absolute inset-0 opacity-40" style={{backgroundImage:"linear-gradient(180deg,rgba(0,0,0,.28),transparent 30%,transparent 58%,rgba(0,0,0,.86)),repeating-linear-gradient(90deg,transparent 0 13%,rgba(255,255,255,.035) 13.5% 14%,transparent 14.5% 28%)"}} />
               <nav aria-label="Video sections" className="absolute inset-x-0 top-0 z-10 flex items-center justify-center gap-4 border-b border-white/10 bg-[#08090c]/65 px-2 pb-3 pt-4 text-xs font-bold backdrop-blur-sm">
                 <a href="#feed" className="border-b-2 border-[#ff5555] pb-1 text-white no-underline">Videos 🎬</a>
-                <a href="https://itworldjersey.store/" className="text-white/75 no-underline">Live 🔴</a>
+                <a href="https://itworldjersey.store/live/" className="text-white/75 no-underline">Live 🔴</a>
                 <a href="#social" className="text-white/75 no-underline">Social 🪩</a>
               </nav>
 
@@ -514,8 +514,8 @@ export default function App() {
           <a href="https://itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">⌂</span>Home</a>
           <a href="https://itworldjersey.store/shop" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">▦</span>Shop</a>
           <a href="https://itworldjersey.store/custom-design.html" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">＋</span>Create</a>
-          <a href="https://itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">✉</span>Inbox</a>
-          <a href="https://itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">◉</span>Profile</a>
+          <a href="https://messenger.profile.itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">✉</span>Inbox</a>
+          <a href="https://profile.itworldjersey.store/" className="rounded-xl px-1 py-2 text-white/70 no-underline"><span className="block text-lg">◉</span>Profile</a>
         </div>
       </nav>
       <footer className="border-t border-white/10 pb-16 sm:pb-0">
